@@ -1,0 +1,49 @@
+<div class="container" *ngIf="reports$ | async as reportsList; else loading">
+    <div class="header-banner">IT 03-1</div>
+
+    <div class="toolbar">
+        <button class="btn btn-approve" (click)="openModal('approve', reportsList)">อนุมัติ</button>
+        <button class="btn btn-reject" (click)="openModal('reject', reportsList)">ไม่อนุมัติ</button>
+    </div>
+
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th width="40"><input type="checkbox" [(ngModel)]="isAll" (change)="toggleAll($event, reportsList) ">
+                </th>
+                <th>รายการ</th>
+                <th>เหตุผล</th>
+                <th>สถานะเอกสาร</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let r of reportsList">
+                <td>
+                    <input type="checkbox" [(ngModel)]="r.selected" (change)="toggleNotAll( reportsList) ">
+                </td>
+                <td>{{ r.title }}</td>
+                <td>{{ r.reason || 'xxxxx' }}</td>
+                <td [ngClass]="getStatusClass(r.status)">{{ statusLabel[r.status] }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="modal-backdrop" *ngIf="isModalOpen">
+        <div class="modal-content">
+            <div class="modal-header">ยืนยันการ{{ modalType === 'approve' ? 'อนุมัติ' : 'ไม่อนุมัติ' }}</div>
+            <div class="modal-body">
+                <label>เหตุผล :</label>
+                <textarea [(ngModel)]="actionReason" rows="4" placeholder="กรอกเหตุผลที่นี่..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-confirm" (click)="confirmAction(reportsList)">{{ modalType === 'approve' ?
+                    'อนุมัติ' : 'ไม่อนุมัติ' }}</button>
+                <button class="btn btn-cancel" (click)="closeModal()">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #loading>
+    <p>กำลังโหลดข้อมูล...</p>
+</ng-template>
